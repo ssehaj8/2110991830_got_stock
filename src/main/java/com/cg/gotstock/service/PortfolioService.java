@@ -22,6 +22,9 @@ public class PortfolioService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private  ExternalApiService externalApiService;
+
     public void addStock(String username, StockHoldingDTO stockHoldingDTO) {
         User user = (User) userRepository.findByUsername(username);
         if (user == null){
@@ -31,8 +34,9 @@ public class PortfolioService {
         holding.setSymbol(stockHoldingDTO.getSymbol());
         holding.setQuantity(stockHoldingDTO.getQuantity());
         holding.setPurchasePrice(stockHoldingDTO.getPurchasePrice());
-//        holding.setCurrentPrice(stockPriceService.getCurrentPrice(stockHoldingDTO.getSymbol()));
-        holding.setCurrentPrice(stockHoldingDTO.getCurrentPrice());
+
+       holding.setCurrentPrice(externalApiService.fetchStockData(stockHoldingDTO.getSymbol()));
+  //      holding.setCurrentPrice(stockHoldingDTO.getCurrentPrice());
         holding.setUser(user);
         stockHoldingRepository.save(holding);
         log.info("stock added");
