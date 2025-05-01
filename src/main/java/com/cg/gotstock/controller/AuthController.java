@@ -14,8 +14,8 @@ public class AuthController {
 //    private ExternalApiService externalApiService;
 //
 //    @GetMapping("/stock")
-//    public void getIBMStockData() {
-//         externalApiService.sendStockDataEmail();
+//    public PortfolioResponseDTO getIBMStockData() {
+//         return externalApiService.sendStockDataEmail();
 //    }
 
 }
