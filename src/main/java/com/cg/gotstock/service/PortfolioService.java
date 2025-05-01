@@ -34,4 +34,24 @@ public class PortfolioService {
         stockHoldingRepository.save(holding);
         log.info("stock added");
     }
+
+    public void updateStock(String username, Long id, StockHoldingDTO stockHoldingDTO) {
+        User user=userRepository.findByUsername(username);
+        if(user==null){
+            throw new RuntimeException("User not found");
+        }
+        StockHolding holding=stockHoldingRepository.findById(id).orElse(null);
+        if(holding==null){
+            throw new RuntimeException("Stock not found");
+        }
+        if(holding.getUser()!=user){
+            throw new RuntimeException("User not in stock");
+        }
+        holding.setSymbol(stockHoldingDTO.getSymbol());
+        holding.setQuantity(stockHoldingDTO.getQuantity());
+        holding.setPurchasePrice(stockHoldingDTO.getPurchasePrice());
+//        holding.setCurrentPrice(stockPriceService.getCurrentPrice(stockHoldingDTO.getSymbol()));
+        holding.setCurrentPrice(stockHoldingDTO.getCurrentPrice());
+        stockHoldingRepository.save(holding);
+    }
 }
