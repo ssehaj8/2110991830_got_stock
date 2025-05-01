@@ -69,11 +69,11 @@ public class ExternalApiService {
     }
 
     @Scheduled(fixedRate = 300000) // 300,000 milliseconds = 5 minutes
-    public PortfolioResponseDTO sendStockDataEmail() {
+    public void sendStockDataEmail() {
         String stockData = fetchStockData("AAPL");
 
         // Compose Email
         emailService.sendEmail("ryan79kumar@gmail.com","Live Stock Data", stockData);
-        return  new PortfolioResponseDTO("Send Live Stock Data",null);
+     //   return  new PortfolioResponseDTO("Send Live Stock Data",null);
     }
 }

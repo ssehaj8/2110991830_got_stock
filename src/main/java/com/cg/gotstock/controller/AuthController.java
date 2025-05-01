@@ -14,8 +14,8 @@ public class AuthController {
     private ExternalApiService externalApiService;
 
     @GetMapping("/stock")
-    public PortfolioResponseDTO getIBMStockData() {
-        return externalApiService.sendStockDataEmail();
+    public void getIBMStockData() {
+         externalApiService.sendStockDataEmail();
     }
 
 }
