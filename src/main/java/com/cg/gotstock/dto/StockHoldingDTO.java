@@ -22,4 +22,6 @@ public class StockHoldingDTO {
     private Double purchasePrice;
 
     private Double currentPrice;
+
+    private String username;
 }
