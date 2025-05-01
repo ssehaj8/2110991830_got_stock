@@ -7,6 +7,7 @@ import java.util.List;
 @Data
 public class PortfolioResponseDTO {
 
+
     private Long id;
     private String username;
     private List<StockHoldingDTO> holdings;
