@@ -21,9 +21,6 @@ public class StockHolding {
 
     private Double currentPrice;
 
-    private Double previousPrice; // For daily change tracking
-
-    private LocalDateTime lastUpdated;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
