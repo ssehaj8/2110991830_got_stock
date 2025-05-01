@@ -1,12 +1,13 @@
 package com.cg.gotstock.controller;
 
-
 import com.cg.gotstock.dto.UserLoginDTO;
 import com.cg.gotstock.dto.UserRegisterDTO;
 import com.cg.gotstock.service.EmailService;
 import com.cg.gotstock.service.UserService;
 import jakarta.mail.MessagingException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,8 +25,10 @@ public class AuthController {
         emailService.sendEmail(registerDTO.getEmail(), "Registration successful", "Welcome to got-stock, your account has been created");
         return userService.registerUser(registerDTO);
     }
+
     @PostMapping("/login-user")
     public String loginUser(@RequestBody UserLoginDTO loginDTO) throws MessagingException {
         return userService.loginUser(loginDTO);
     }
 }
+
