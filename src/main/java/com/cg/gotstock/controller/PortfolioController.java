@@ -21,7 +21,7 @@ public class PortfolioController {
     public ResponseEntity<?> addStock(@Valid @RequestBody StockHoldingDTO stockHoldingDTO) {
         portfolioService.addStock(stockHoldingDTO.getUsername(), stockHoldingDTO);
         return ResponseEntity.ok("Stock added successfully");
-    }
+}
 
     @GetMapping("/stocks/user/{userId}")
     public ResponseEntity<?> getAllStocks(@PathVariable Long userId) {
@@ -35,5 +35,11 @@ public class PortfolioController {
     }
 
 
+
+    @PostMapping("/update/{id}")
+    public ResponseEntity<?> updateStock(@PathVariable(value = "id") Long id, @Valid @RequestBody StockHoldingDTO stockHoldingDTO) {
+        portfolioService.updateStock(stockHoldingDTO.getUsername(), id,stockHoldingDTO);
+        return ResponseEntity.ok("Stock updated successfully");
+    }
 
 }

@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,4 +72,24 @@ public class PortfolioService {
         log.info("Stock holding ID {} removed for user: {}", id, username);
     }
 
+
+    public void updateStock(String username, Long id, StockHoldingDTO stockHoldingDTO) {
+        User user=userRepository.findByUsername(username);
+        if(user==null){
+            throw new RuntimeException("User not found");
+        }
+        StockHolding holding=stockHoldingRepository.findById(id).orElse(null);
+        if(holding==null){
+            throw new RuntimeException("Stock not found");
+        }
+        if(holding.getUser()!=user){
+            throw new RuntimeException("User not in stock");
+        }
+        holding.setSymbol(stockHoldingDTO.getSymbol());
+        holding.setQuantity(stockHoldingDTO.getQuantity());
+        holding.setPurchasePrice(stockHoldingDTO.getPurchasePrice());
+//        holding.setCurrentPrice(stockPriceService.getCurrentPrice(stockHoldingDTO.getSymbol()));
+        holding.setCurrentPrice(stockHoldingDTO.getCurrentPrice());
+        stockHoldingRepository.save(holding);
+    }
 }
