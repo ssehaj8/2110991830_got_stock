@@ -1,14 +1,14 @@
 package com.cg.gotstock.service;
 
+import com.cg.gotstock.repository.StockHoldingRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-@Component
+@Service
 @Slf4j
 public class EmailService {
 
@@ -16,13 +16,15 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    public void sendEmail(String toEmail, String subject, String text) throws MessagingException {
+
+
+    public void sendEmail(String to, String subject, String text) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
-        helper.setTo(toEmail);
+        helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(text, true);
         mailSender.send(message);
-        log.info("Email sent to: {}", toEmail);
+        log.info("Email sent to: {}", to);
     }
 }
