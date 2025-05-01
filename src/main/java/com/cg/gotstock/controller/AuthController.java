@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AuthController {
 
-    @Autowired
-    private ExternalApiService externalApiService;
-
-    @GetMapping("/stock")
-    public void getIBMStockData() {
-         externalApiService.sendStockDataEmail();
-    }
+//    @Autowired
+//    private ExternalApiService externalApiService;
+//
+//    @GetMapping("/stock")
+//    public void getIBMStockData() {
+//         externalApiService.sendStockDataEmail();
+//    }
 
 }
