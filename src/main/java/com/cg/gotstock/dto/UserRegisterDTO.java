@@ -1,4 +1,5 @@
 package com.cg.gotstock.dto;
 
 public class UserRegisterDTO {
+
 }
