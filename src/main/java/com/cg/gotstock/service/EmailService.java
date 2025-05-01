@@ -1,28 +1,27 @@
 package com.cg.gotstock.service;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Component;
-
-@Component
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
+@Service
+@Slf4j
 public class EmailService {
 
+
     @Autowired
-    JavaMailSender mailSender;
+    private JavaMailSender mailSender;
 
-    @Value("${spring.mail.username}")
-    private String fromEmail;
-
-    public void sendEmail(String toEmail, String subject, String body) {
-        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        // simpleMailMessage.setFrom("aaryankgarg@gmail.com");
-        simpleMailMessage.setFrom(fromEmail);
-        simpleMailMessage.setTo(toEmail);
-        simpleMailMessage.setText(body);
-        simpleMailMessage.setSubject(subject);
-        mailSender.send(simpleMailMessage);
-        System.out.println("Mail sent to the user!!");
+    public void sendEmail(String to, String subject, String text) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(text, true);
+        mailSender.send(message);
+        log.info("Email sent to: {}", to);
     }
 }
