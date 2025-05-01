@@ -1,5 +1,6 @@
 package com.cg.gotstock.service;
 
+import com.cg.gotstock.repository.StockHoldingRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,8 @@ public class EmailService {
 
     @Autowired
     private JavaMailSender mailSender;
+
+
 
     public void sendEmail(String to, String subject, String text) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
