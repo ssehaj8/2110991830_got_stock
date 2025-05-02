@@ -9,6 +9,7 @@ public interface UserInterface {
 
     boolean matchPassword(String rawPassword, String encodedPassword);
     boolean existsByEmail(String email);
-    Optional<User> getUserByEmail(String email);
+    Optional<User> getUserByUsername(String username);
+
 
 }

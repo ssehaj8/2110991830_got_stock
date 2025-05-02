@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 @NoArgsConstructor
 @Data
-public class PortfolioResponseDTO <S, S1>{
+public class PortfolioResponseDTO{
 
 
     private Long id;
@@ -16,5 +16,5 @@ public class PortfolioResponseDTO <S, S1>{
     private Double totalGainLoss;
     private Double totalGainLossPercentage;
     private String message;
-    private Object data;
+
 }

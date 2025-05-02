@@ -29,14 +29,14 @@ public class User {
     private String resetCode;
 
     private LocalDateTime resetCodeExpiry;
-    private String token;
+//    private String token;
 
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<StockHolding> holdings;
 
 
-    public boolean isPresent() {
-        return false;
-    }
+//    public boolean isPresent() {
+//        return false;
+//    }
 }

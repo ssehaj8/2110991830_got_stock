@@ -47,10 +47,10 @@ public class JwtUtility {
     public boolean validateToken(String token, String userEmail){
         final String email= extractEmail(token);
         boolean isTokenPresent= true;
-        Optional<User> user = userRepository.findByEmail(email);
-        if(user.isPresent() && user.get().getToken()==null){
-            isTokenPresent=false;
-        }
+        User user = userRepository.findByEmail(email);
+//        if(user.isPresent() && user.getToken()==null){
+//            isTokenPresent=false;
+//        }
         final boolean valid= Jwts.parserBuilder()
                 .setSigningKey(SECRET_KEY.getBytes())
                 .build()

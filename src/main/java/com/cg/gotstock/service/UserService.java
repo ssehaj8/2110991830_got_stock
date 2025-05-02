@@ -8,7 +8,6 @@ import com.cg.gotstock.repository.UserRepository;
 import com.cg.gotstock.utility.JwtUtility;
 import jakarta.mail.MessagingException;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 @Slf4j
 @Service
-public class UserService implements UserInterface{
+public class UserService implements UserInterface {
 
     @Autowired
     private UserRepository userRepository;
@@ -29,75 +28,74 @@ public class UserService implements UserInterface{
     @Autowired
     private JwtUtility jwtUtility;
 
-    private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
-    public PortfolioResponseDTO<String, String >registerUser(UserRegisterDTO registerDTO) {
+
+    public ResponseEntity<?> registerUser(UserRegisterDTO registerDTO)throws MessagingException  {
         log.info("Registering user: {}", registerDTO.getEmail());
-        PortfolioResponseDTO<String,String> res= new PortfolioResponseDTO<>();
-        if(existsByEmail(registerDTO.getEmail())){
+
+
+        if (existsByEmail(registerDTO.getEmail())) {
             log.warn("Registration failed: User already exists with email {}", registerDTO.getEmail());
-            res.setMessage("error");
-            res.setData("User Already Exists");
-            return res;
+            return new ResponseEntity<>("registration failed", HttpStatus.CONFLICT);
         }
-        User user=new User();
+
+        User user = new User();
         user.setFirstname(registerDTO.getFirstname());
         user.setLastname(registerDTO.getLastname());
         user.setUsername(registerDTO.getUsername());
         user.setEmail(registerDTO.getEmail());
         user.setPhonenumber(registerDTO.getPhonenumber());
         user.setPassword(registerDTO.getPassword());
+
         userRepository.save(user);
 
         log.info("User {} registered successfully!", user.getEmail());
-        res.setMessage("message");
-        res.setData("User Registed Successfully");
-        return res;
+        emailService.sendEmail(user.getEmail(), "Registration Successful", "Hii"
+                + "\n You have been successfully Registered in GOT-STOCK");
+
+        return new ResponseEntity<UserRegisterDTO>(registerDTO, HttpStatus.OK);
     }
 
-    public PortfolioResponseDTO<String, String> loginUser(UserLoginDTO loginDTO) throws MessagingException {
-        log.info("Login attempt for user: {}", loginDTO.getUsername());
-        //User user = userRepository.findByUsername(loginDTO.getUsername());
-        PortfolioResponseDTO <String, String>res = new PortfolioResponseDTO<>();
-        Optional<User> userExists = getUserByEmail(loginDTO.getEmail());
 
-        if (userExists.isPresent()) {
-            User user = userExists.get();
+    public ResponseEntity<?> loginUser(UserLoginDTO loginDTO)  {
+        log.info("Login attempt for user: {}", loginDTO.getUsername());
+        User user = userRepository.findByUsername(loginDTO.getUsername());
+
+
+
             if (matchPassword(loginDTO.getPassword(), user.getPassword())) {
                 String token = jwtUtility.generateToken(user.getEmail());
-                user.setToken(token);
+
                 userRepository.save(user);
                 log.debug("Login successful for user: {}- Token generated", user.getEmail());
-                    emailService.sendEmail(user.getEmail(), "Logged in Employee Payroll App", "Hii"
-                        + "\n You have been successfully logged in!" + token);
-                res.setMessage("message");
-                res.setData("User Logged In Successfully: " + token);
-                return res;
+
+                return new ResponseEntity<>(token, HttpStatus.OK);
 
             } else {
                 log.warn("Invalid credentials for user: {}", loginDTO.getEmail());
-                res.setMessage("error");
-                res.setData("Invalid Credentials");
-                return res;
+
+                return new ResponseEntity<>("invalid credentials", HttpStatus.OK);
             }
 
-        } else {
-            log.error("User not found with email: {}", loginDTO.getEmail());
-            res.setMessage("error");
-            res.setData("User Not Found");
-            return res;
         }
+
+
+
+
+    @Override
+    public Optional<User> getUserByUsername(String username) {
+        return Optional.empty();
+    }
+
+
+    @Override
+    public boolean matchPassword(String rawPassword, String encodedPassword) {
+        // Use equals() if passwords are plain text (not recommended)
+        return rawPassword.equals(encodedPassword);
     }
 
     @Override
     public boolean existsByEmail(String email) {
-        log.debug("Checking if user exists by email: {}", email);
-        return userRepository.findByUsername(email).isPresent();
-    }
-
-    @Override
-    public Optional<User> getUserByEmail(String email) {
-        log.debug("Fetching user by email: {}", email);
-        return userRepository.findByEmail(email);
+        return false;
     }
 }

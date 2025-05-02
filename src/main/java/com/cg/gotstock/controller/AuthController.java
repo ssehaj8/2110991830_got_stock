@@ -1,5 +1,6 @@
 package com.cg.gotstock.controller;
 
+import com.cg.gotstock.dto.PortfolioResponseDTO;
 import com.cg.gotstock.dto.UserLoginDTO;
 import com.cg.gotstock.dto.UserRegisterDTO;
 import com.cg.gotstock.service.EmailService;
@@ -20,15 +21,14 @@ public class AuthController {
     @Autowired
     private EmailService emailService;
 
-    @PostMapping("/register-user")
-    public ResponseEntity<?> registerUser(@RequestBody UserRegisterDTO registerDTO) throws MessagingException {
-        emailService.sendEmail(registerDTO.getEmail(), "Registration successful", "Welcome to got-stock, your account has been created");
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegisterDTO registerDTO) throws MessagingException{
         return userService.registerUser(registerDTO);
     }
-
-    @PostMapping("/login-user")
-    public String loginUser(@RequestBody UserLoginDTO loginDTO) throws MessagingException {
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@Valid @RequestBody UserLoginDTO loginDTO){
         return userService.loginUser(loginDTO);
     }
+
 }
 
