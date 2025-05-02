@@ -2,13 +2,18 @@ package com.cg.gotstock.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Data
 @Entity
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,14 +34,26 @@ public class User {
     private String resetCode;
 
     private LocalDateTime resetCodeExpiry;
-//    private String token;
+
 
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<StockHolding> holdings;
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.emptyList(); // No roles for now
+    }
 
-//    public boolean isPresent() {
-//        return false;
-//    }
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+
 }
