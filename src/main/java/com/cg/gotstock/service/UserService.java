@@ -80,7 +80,6 @@ public class UserService implements UserInterface {
 
 
 
-
     @Override
     public Optional<User> getUserByUsername(String username) {
         return Optional.empty();
