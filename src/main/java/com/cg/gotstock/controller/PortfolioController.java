@@ -3,6 +3,8 @@ package com.cg.gotstock.controller;
 import com.cg.gotstock.dto.StockHoldingDTO;
 import com.cg.gotstock.repository.StockHoldingRepository;
 import com.cg.gotstock.service.PortfolioService;
+import com.lowagie.text.DocumentException;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,10 +39,19 @@ public class PortfolioController {
         portfolioService.removeStock( id);
         return ResponseEntity.ok("Stock deleted successfully");
     }
+
+
+
     @PostMapping("/update/{id}")
     public ResponseEntity<?> updateStock(@PathVariable(value = "id") Long id, @Valid @RequestBody StockHoldingDTO stockHoldingDTO) {
         portfolioService.updateStock(id,stockHoldingDTO);
         return ResponseEntity.ok("Stock updated successfully");
+    }
+
+    @PostMapping("/report")
+    public ResponseEntity<?> sendReport(@RequestParam Long userId, @RequestParam String email) throws MessagingException, DocumentException, MessagingException, DocumentException {
+        portfolioService.sendStockReport(userId, email);
+        return ResponseEntity.ok("Report sent successfully");
     }
 
 }
