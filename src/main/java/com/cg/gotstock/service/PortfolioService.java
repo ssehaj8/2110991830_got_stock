@@ -5,10 +5,13 @@ import com.cg.gotstock.model.StockHolding;
 import com.cg.gotstock.model.User;
 import com.cg.gotstock.repository.StockHoldingRepository;
 import com.cg.gotstock.repository.UserRepository;
+import com.lowagie.text.DocumentException;
+import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +27,12 @@ public class PortfolioService {
 
     @Autowired
     private  ExternalApiService externalApiService;
+
+    @Autowired
+    private PdfGenerator pdfGenerator;
+
+    @Autowired
+    private EmailService emailService;
 
     public void addStock(String username, StockHoldingDTO stockHoldingDTO) {
         User user = userRepository.findByUsername(username);
@@ -49,16 +58,20 @@ public class PortfolioService {
             throw new RuntimeException("User not found");
         }
 
-        List<StockHolding> holdings = stockHoldingRepository.findByUserId(userId);
-        return holdings.stream().map(holding -> {
+        List<StockHolding> holdingList = stockHoldingRepository.findByUserId(userId);
+        List<StockHoldingDTO> dtoList = new ArrayList<>();
+
+        for (StockHolding holding : holdingList) {
             StockHoldingDTO dto = new StockHoldingDTO();
             dto.setSymbol(holding.getSymbol());
             dto.setQuantity(holding.getQuantity());
             dto.setPurchasePrice(holding.getPurchasePrice());
             dto.setCurrentPrice(holding.getCurrentPrice());
             dto.setUsername(user.getUsername());
-            return dto;
-        }).collect(Collectors.toList());
+            dtoList.add(dto);
+        }
+
+        return dtoList;
     }
 
 
@@ -78,8 +91,8 @@ public class PortfolioService {
 
 
     public void updateStock(String username, Long id, StockHoldingDTO stockHoldingDTO) {
-        User user=userRepository.findByUsername(username);
-        if(user==null){
+        User user = userRepository.findByUsername(username);
+        if(user == null){
             throw new RuntimeException("User not found");
         }
         StockHolding holding=stockHoldingRepository.findById(id).orElse(null);
@@ -95,5 +108,27 @@ public class PortfolioService {
 //        holding.setCurrentPrice(stockPriceService.getCurrentPrice(stockHoldingDTO.getSymbol()));
         holding.setCurrentPrice(stockHoldingDTO.getCurrentPrice());
         stockHoldingRepository.save(holding);
+    }
+
+    public void sendStockReport(Long userId, String email) throws MessagingException, DocumentException {
+        log.info("Generating stock report for user ID: {}", userId);
+        List<StockHoldingDTO> holdings = getAllStocks(userId);
+        User user = userRepository.findById(userId).orElse(null);
+
+        if(user==null){
+            throw new RuntimeException("User not found");
+        }
+
+        byte[] pdfBytes = pdfGenerator.generatePDF(holdings, user.getUsername());
+        log.info("PDF generated successfully for user: {}", user.getUsername());
+
+        emailService.sendEmailWithAttachment(
+                email,
+                "Your Stock holdings attatched.",
+                "Please find your stock holdings attached.",
+                pdfBytes,
+                "Stock_holdings_report.pdf"
+        );
+        log.info("Stock report email sent to: {}", email);
     }
 }
