@@ -140,9 +140,6 @@ public class UserService implements UserInterface {
         int otp = 100000 + random.nextInt(900000); // 6-digit OTP
         return String.valueOf(otp);
     }
-
-
-
     @Override
     public Optional<User> getUserByUsername(String username) {
         return Optional.empty();
@@ -159,4 +156,6 @@ public class UserService implements UserInterface {
     public boolean existsByEmail(String email) {
         return false;
     }
+
+
 }
