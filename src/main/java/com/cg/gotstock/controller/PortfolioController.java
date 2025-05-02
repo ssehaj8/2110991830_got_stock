@@ -17,6 +17,7 @@ public class PortfolioController {
     @Autowired
     private PortfolioService portfolioService;
 
+
     @PostMapping("/add")
     public ResponseEntity<?> addStock(@Valid @RequestBody StockHoldingDTO stockHoldingDTO) {
         portfolioService.addStock(stockHoldingDTO.getUsername(), stockHoldingDTO);
