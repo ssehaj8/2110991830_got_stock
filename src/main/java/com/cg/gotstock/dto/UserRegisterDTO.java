@@ -9,6 +9,8 @@ import lombok.Data;
 public class UserRegisterDTO {
 
 
+
+
     private Long id;
 
     @NotBlank(message = "FirstName is mandatory")

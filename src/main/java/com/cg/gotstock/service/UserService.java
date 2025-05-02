@@ -1,17 +1,25 @@
 package com.cg.gotstock.service;
 
-import com.cg.gotstock.dto.*;
+import com.cg.gotstock.dto.ForgotPasswordDTO;
+import com.cg.gotstock.dto.ResetPasswordDTO;
+import com.cg.gotstock.dto.UserLoginDTO;
+import com.cg.gotstock.dto.UserRegisterDTO;
 import com.cg.gotstock.model.User;
 import com.cg.gotstock.repository.UserRepository;
-import com.cg.gotstock.utility.JwtUtility;
+import com.cg.gotstock.security.JwtUtility;
 import jakarta.mail.MessagingException;
-import jakarta.validation.constraints.Email;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,6 +36,12 @@ public class UserService implements UserInterface {
     private EmailService emailService;
     @Autowired
     private JwtUtility jwtUtility;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    private static final PasswordEncoder passEncoder = new BCryptPasswordEncoder();
 
     public ResponseEntity<?> registerUser(UserRegisterDTO registerDTO)throws MessagingException  {
         log.info("Registering user: {}", registerDTO.getEmail());
@@ -44,15 +58,13 @@ public class UserService implements UserInterface {
         user.setUsername(registerDTO.getUsername());
         user.setEmail(registerDTO.getEmail());
         user.setPhonenumber(registerDTO.getPhonenumber());
-        user.setPassword(registerDTO.getPassword());
+        user.setPassword(passEncoder.encode(registerDTO.getPassword()));
 
-         User savedUser=userRepository.save(user);
-
+        userRepository.save(user);
+        registerDTO.setId(user.getId());
         log.info("User {} registered successfully!", user.getEmail());
         emailService.sendEmail(user.getEmail(), "Registration Successful", "Hii"
                 + "\n You have been successfully Registered in GOT-STOCK");
-
-        registerDTO.setId(savedUser.getId());
 
         return new ResponseEntity<UserRegisterDTO>(registerDTO, HttpStatus.OK);
     }
@@ -60,23 +72,14 @@ public class UserService implements UserInterface {
 
     public ResponseEntity<?> loginUser(UserLoginDTO loginDTO)  {
         log.info("Login attempt for user: {}", loginDTO.getUsername());
-        User user = userRepository.findByUsername(loginDTO.getUsername());
-
-
-
-            if (matchPassword(loginDTO.getPassword(), user.getPassword())) {
-                String token = jwtUtility.generateToken(user.getEmail());
-
-                userRepository.save(user);
-                log.debug("Login successful for user: {}- Token generated", user.getEmail());
-
-                return new ResponseEntity<>("User Logged in successfully   Token: "+token, HttpStatus.OK);
-
-            } else {
-                log.warn("Invalid credentials for user: {}", loginDTO.getEmail());
-
-                return new ResponseEntity<>("invalid credentials", HttpStatus.OK);
-            }
+        try{
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword()));
+            UserDetails userDetails= userDetailsService.loadUserByUsername(loginDTO.getEmail());
+            String jwtToken= jwtUtility.generateToken(userDetails.getUsername());
+            return new ResponseEntity<>(jwtToken, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        }
 
         }
     public ResponseEntity<?> resetPassword(ResetPasswordDTO resetPasswordDTO) {
