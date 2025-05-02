@@ -26,9 +26,11 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
-    private String resetCode;
-
     private LocalDateTime resetCodeExpiry;
+
+    private String otp;
+    private LocalDateTime otpExpiry;
+
 //    private String token;
 
 

@@ -1,9 +1,6 @@
 package com.cg.gotstock.controller;
 
-import com.cg.gotstock.dto.PortfolioResponseDTO;
-import com.cg.gotstock.dto.ResetPasswordDTO;
-import com.cg.gotstock.dto.UserLoginDTO;
-import com.cg.gotstock.dto.UserRegisterDTO;
+import com.cg.gotstock.dto.*;
 import com.cg.gotstock.service.EmailService;
 import com.cg.gotstock.service.UserService;
 import jakarta.mail.MessagingException;
@@ -22,11 +19,11 @@ public class AuthController {
     @Autowired
     private EmailService emailService;
 
-    @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegisterDTO registerDTO) throws MessagingException{
+    @PostMapping("/register-user")
+    public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegisterDTO registerDTO)throws MessagingException{
         return userService.registerUser(registerDTO);
     }
-    @PostMapping("/login")
+    @PostMapping("/login-user")
     public ResponseEntity<?> loginUser(@Valid @RequestBody UserLoginDTO loginDTO){
         return userService.loginUser(loginDTO);
     }
@@ -35,6 +32,12 @@ public class AuthController {
     public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordDTO resetPasswordDTO){
         return userService.resetPassword(resetPasswordDTO);
     }
+
+   @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordDTO forgotPasswordDTO)throws MessagingException{
+        return userService.forgotPassword(forgotPasswordDTO);
+    }
+
 
 }
 

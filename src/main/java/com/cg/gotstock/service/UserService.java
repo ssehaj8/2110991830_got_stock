@@ -1,9 +1,6 @@
 package com.cg.gotstock.service;
 
-import com.cg.gotstock.dto.PortfolioResponseDTO;
-import com.cg.gotstock.dto.ResetPasswordDTO;
-import com.cg.gotstock.dto.UserLoginDTO;
-import com.cg.gotstock.dto.UserRegisterDTO;
+import com.cg.gotstock.dto.*;
 import com.cg.gotstock.model.User;
 import com.cg.gotstock.repository.UserRepository;
 import com.cg.gotstock.utility.JwtUtility;
@@ -17,7 +14,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Random;
+
 @Slf4j
 @Service
 public class UserService implements UserInterface {
@@ -46,11 +46,13 @@ public class UserService implements UserInterface {
         user.setPhonenumber(registerDTO.getPhonenumber());
         user.setPassword(registerDTO.getPassword());
 
-        userRepository.save(user);
+         User savedUser=userRepository.save(user);
 
         log.info("User {} registered successfully!", user.getEmail());
         emailService.sendEmail(user.getEmail(), "Registration Successful", "Hii"
                 + "\n You have been successfully Registered in GOT-STOCK");
+
+        registerDTO.setId(savedUser.getId());
 
         return new ResponseEntity<UserRegisterDTO>(registerDTO, HttpStatus.OK);
     }
@@ -68,7 +70,7 @@ public class UserService implements UserInterface {
                 userRepository.save(user);
                 log.debug("Login successful for user: {}- Token generated", user.getEmail());
 
-                return new ResponseEntity<>(token, HttpStatus.OK);
+                return new ResponseEntity<>("User Logged in successfully   Token: "+token, HttpStatus.OK);
 
             } else {
                 log.warn("Invalid credentials for user: {}", loginDTO.getEmail());
@@ -87,12 +89,56 @@ public class UserService implements UserInterface {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
 
-        user.setPassword(resetPasswordDTO.getNewPassword());
+
+        if (user.getOtp() == null || !user.getOtp().equals(resetPasswordDTO.getOtp())) {
+            log.warn("Invalid OTP for email: {}", resetPasswordDTO.getEmail());
+            return new ResponseEntity<>("Invalid OTP", HttpStatus.BAD_REQUEST);
+        }
+
+        if (user.getOtpExpiry() == null || user.getOtpExpiry().isBefore(LocalDateTime.now())) {
+            log.warn("Expired OTP for email: {}", resetPasswordDTO.getEmail());
+            return new ResponseEntity<>("OTP has expired", HttpStatus.BAD_REQUEST);
+        }
+        user.setPassword(resetPasswordDTO.getNewPassword()); // Or encode if needed
+        user.setOtp(null);
+        user.setOtpExpiry(null);
         userRepository.save(user);
 
         log.info("Password updated successfully for email: {}", resetPasswordDTO.getEmail());
         return new ResponseEntity<>("Password updated successfully", HttpStatus.OK);
     }
+
+    public ResponseEntity<?> forgotPassword(ForgotPasswordDTO forgotPasswordDTO) throws MessagingException{
+        log.info("Forgot password requested for email: {}", forgotPasswordDTO.getEmail());
+
+        User user = userRepository.findByEmail(forgotPasswordDTO.getEmail());
+
+        if (user == null) {
+            log.warn("No user found with email: {}", forgotPasswordDTO.getEmail());
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
+
+
+        String otp = generateOtp();
+        user.setOtp(otp);
+        user.setOtpExpiry(LocalDateTime.now().plusMinutes(10)); // 10 min expiry
+        userRepository.save(user);
+
+        String subject = "Your OTP for Password Reset";
+        String body = "Hello,\n\nYour OTP for resetting your password is: " + otp +
+                "\nThis OTP is valid for 10 minutes.\n\nRegards,\nGOT-STOCK Team";
+        emailService.sendEmail(user.getEmail(), subject, body);
+
+        log.info("OTP sent to email: {}", forgotPasswordDTO.getEmail());
+        return new ResponseEntity<>("OTP sent to email", HttpStatus.OK);
+    }
+    private String generateOtp() {
+        Random random = new Random();
+        int otp = 100000 + random.nextInt(900000); // 6-digit OTP
+        return String.valueOf(otp);
+    }
+
+
 
     @Override
     public Optional<User> getUserByUsername(String username) {
