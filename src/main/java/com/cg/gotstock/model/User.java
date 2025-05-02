@@ -36,6 +36,11 @@ public class User implements UserDetails {
     private LocalDateTime resetCodeExpiry;
 
 
+    private String otp;
+    private LocalDateTime otpExpiry;
+
+//    private String token;
+
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<StockHolding> holdings;
