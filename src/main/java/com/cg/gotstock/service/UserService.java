@@ -1,6 +1,7 @@
 package com.cg.gotstock.service;
 
 import com.cg.gotstock.dto.PortfolioResponseDTO;
+import com.cg.gotstock.dto.ResetPasswordDTO;
 import com.cg.gotstock.dto.UserLoginDTO;
 import com.cg.gotstock.dto.UserRegisterDTO;
 import com.cg.gotstock.model.User;
@@ -27,8 +28,6 @@ public class UserService implements UserInterface {
     private EmailService emailService;
     @Autowired
     private JwtUtility jwtUtility;
-
-
 
     public ResponseEntity<?> registerUser(UserRegisterDTO registerDTO)throws MessagingException  {
         log.info("Registering user: {}", registerDTO.getEmail());
@@ -78,9 +77,22 @@ public class UserService implements UserInterface {
             }
 
         }
+    public ResponseEntity<?> resetPassword(ResetPasswordDTO resetPasswordDTO) {
+        log.info("Password reset requested for email: {}", resetPasswordDTO.getEmail());
 
+        User user = userRepository.findByEmail(resetPasswordDTO.getEmail());
 
+        if (user == null) {
+            log.warn("No user found with email: {}", resetPasswordDTO.getEmail());
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
 
+        user.setPassword(resetPasswordDTO.getNewPassword());
+        userRepository.save(user);
+
+        log.info("Password updated successfully for email: {}", resetPasswordDTO.getEmail());
+        return new ResponseEntity<>("Password updated successfully", HttpStatus.OK);
+    }
 
     @Override
     public Optional<User> getUserByUsername(String username) {

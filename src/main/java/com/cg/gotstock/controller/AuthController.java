@@ -1,6 +1,7 @@
 package com.cg.gotstock.controller;
 
 import com.cg.gotstock.dto.PortfolioResponseDTO;
+import com.cg.gotstock.dto.ResetPasswordDTO;
 import com.cg.gotstock.dto.UserLoginDTO;
 import com.cg.gotstock.dto.UserRegisterDTO;
 import com.cg.gotstock.service.EmailService;
@@ -28,6 +29,11 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@Valid @RequestBody UserLoginDTO loginDTO){
         return userService.loginUser(loginDTO);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordDTO resetPasswordDTO){
+        return userService.resetPassword(resetPasswordDTO);
     }
 
 }
