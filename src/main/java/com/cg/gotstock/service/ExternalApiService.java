@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-=======
+
 package com.cg.gotstock.service;
 
 
@@ -88,4 +87,4 @@ public class ExternalApiService {
 //        //   return  new PortfolioResponseDTO("Send Live Stock Data",null);
 //    }
     
->>>>>>> eecdfd160311c3f00a7f13244b939cda6c934e5d
+
