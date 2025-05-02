@@ -1,4 +1,4 @@
-package com.cg.gotstock.utility;
+package com.cg.gotstock.security;
 
 import com.cg.gotstock.model.User;
 import com.cg.gotstock.repository.UserRepository;
@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.Optional;
 
 @Component
 public class JwtUtility {
@@ -23,7 +22,7 @@ public class JwtUtility {
         return Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis()+2*60*1000))
+                .setExpiration(new Date(System.currentTimeMillis()+2*60*1000*60))
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8)), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -44,7 +43,7 @@ public class JwtUtility {
 
         }
     }
-    public boolean validateToken(String token, String userEmail){
+    public boolean validateJwt(String token, String userEmail){
         final String email= extractEmail(token);
         boolean isTokenPresent= true;
         User user = userRepository.findByEmail(email);
