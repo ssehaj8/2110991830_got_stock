@@ -133,6 +133,18 @@
 			<version>2.10.1</version>  <!-- Use latest stable version -->
 		</dependency>
 
+		<dependency>
+			<groupId>com.lowagie</groupId>
+			<artifactId>itext</artifactId>
+			<version>2.1.7</version> <!-- or any other suitable version -->
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+
+
 
 	</dependencies>
 
