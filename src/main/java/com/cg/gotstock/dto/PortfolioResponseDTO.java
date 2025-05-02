@@ -1,11 +1,12 @@
 package com.cg.gotstock.dto;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
-
+@NoArgsConstructor
 @Data
-public class PortfolioResponseDTO {
+public class PortfolioResponseDTO{
 
 
     private Long id;
@@ -14,4 +15,6 @@ public class PortfolioResponseDTO {
     private Double totalValue;
     private Double totalGainLoss;
     private Double totalGainLossPercentage;
+    private String message;
+
 }

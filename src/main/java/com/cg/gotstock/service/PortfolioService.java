@@ -26,7 +26,7 @@ public class PortfolioService {
     private  ExternalApiService externalApiService;
 
     public void addStock(String username, StockHoldingDTO stockHoldingDTO) {
-        User user = (User) userRepository.findByUsername(username);
+        User user = userRepository.findByUsername(username);
         if (user == null){
             throw new RuntimeException("User not found");
         }

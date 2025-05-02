@@ -11,4 +11,7 @@ public class UserLoginDTO {
 
     @NotBlank(message = "Password is mandatory")
     private String password;
+
+    @NotBlank(message = "Email is mandatory")
+    private String email;
 }
