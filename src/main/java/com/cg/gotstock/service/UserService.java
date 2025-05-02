@@ -102,7 +102,7 @@ public class UserService implements UserInterface {
             log.warn("Expired OTP for email: {}", resetPasswordDTO.getEmail());
             return new ResponseEntity<>("OTP has expired", HttpStatus.BAD_REQUEST);
         }
-        user.setPassword(resetPasswordDTO.getNewPassword()); // Or encode if needed
+        user.setPassword(passEncoder.encode(resetPasswordDTO.getNewPassword()));
         user.setOtp(null);
         user.setOtpExpiry(null);
         userRepository.save(user);

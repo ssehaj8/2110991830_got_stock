@@ -21,11 +21,11 @@ public class AuthController {
     @Autowired
     private EmailService emailService;
 
-    @PostMapping("/register-user")
+    @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegisterDTO registerDTO)throws MessagingException{
         return userService.registerUser(registerDTO);
     }
-    @PostMapping("/login-user")
+    @PostMapping("/login")
     public ResponseEntity<?> loginUser(@Valid @RequestBody UserLoginDTO loginDTO){
         log.info("Inside loginUser");
         return userService.loginUser(loginDTO);
