@@ -8,6 +8,8 @@ import lombok.Data;
 @Data
 public class UserRegisterDTO {
 
+    private Long id;
+
     @NotBlank(message = "FirstName is mandatory")
     @Size(min = 3, max = 20, message = "firstname must be between 3 and 20 characters")
     private String firstname;

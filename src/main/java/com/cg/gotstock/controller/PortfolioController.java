@@ -4,11 +4,13 @@ import com.cg.gotstock.dto.StockHoldingDTO;
 import com.cg.gotstock.repository.StockHoldingRepository;
 import com.cg.gotstock.service.PortfolioService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Slf4j
 public class PortfolioController {
 
     @Autowired
@@ -20,26 +22,24 @@ public class PortfolioController {
 
     @PostMapping("/add")
     public ResponseEntity<?> addStock(@Valid @RequestBody StockHoldingDTO stockHoldingDTO) {
-        portfolioService.addStock(stockHoldingDTO.getUsername(), stockHoldingDTO);
+        portfolioService.addStock( stockHoldingDTO);
         return ResponseEntity.ok("Stock added successfully");
 }
 
-    @GetMapping("/stocks/user/{userId}")
-    public ResponseEntity<?> getAllStocks(@PathVariable Long userId) {
-        return ResponseEntity.ok(portfolioService.getAllStocks(userId));
+    @GetMapping("/get-stock")
+    public ResponseEntity<?> getAllStocks() {
+        log.info("in get stock controller");
+        return ResponseEntity.ok(portfolioService.getAllStocks());
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteStock(@RequestParam String username, @RequestParam Long id) {
-        portfolioService.removeStock(username, id);
+    public ResponseEntity<?> deleteStock(@RequestParam Long id) {
+        portfolioService.removeStock( id);
         return ResponseEntity.ok("Stock deleted successfully");
     }
-
-
-
     @PostMapping("/update/{id}")
     public ResponseEntity<?> updateStock(@PathVariable(value = "id") Long id, @Valid @RequestBody StockHoldingDTO stockHoldingDTO) {
-        portfolioService.updateStock(stockHoldingDTO.getUsername(), id,stockHoldingDTO);
+        portfolioService.updateStock(id,stockHoldingDTO);
         return ResponseEntity.ok("Stock updated successfully");
     }
 
