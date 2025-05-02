@@ -1,21 +1,27 @@
 package com.cg.gotstock.controller;
 
+import com.cg.gotstock.dto.AlertDTO;
 import com.cg.gotstock.dto.StockHoldingDTO;
 import com.cg.gotstock.repository.StockHoldingRepository;
 import com.cg.gotstock.service.PortfolioService;
+import com.cg.gotstock.service.StockAlertService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-public class PortfolioController {
+public class  PortfolioController {
 
     @Autowired
     private StockHoldingRepository stockHoldingRepository;
 
     @Autowired
     private PortfolioService portfolioService;
+
+
+    @Autowired
+    private StockAlertService stockAlertService;
 
     @PostMapping("/add")
     public ResponseEntity<?> addStock(@Valid @RequestBody StockHoldingDTO stockHoldingDTO) {
@@ -42,4 +48,9 @@ public class PortfolioController {
         return ResponseEntity.ok("Stock updated successfully");
     }
 
+    @PostMapping("/alert")
+    public ResponseEntity<?> createStockAlert(@Valid @RequestBody AlertDTO alertDTO) {
+        stockAlertService.createAlert(alertDTO);
+        return ResponseEntity.ok("Stock alert created successfully");
+    }
 }

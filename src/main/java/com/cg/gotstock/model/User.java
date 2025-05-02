@@ -28,4 +28,8 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<StockHolding> holdings;
+
+//    private boolean highThresholdEmailSent;
+//
+//    private boolean lowThresholdEmailSent;
 }

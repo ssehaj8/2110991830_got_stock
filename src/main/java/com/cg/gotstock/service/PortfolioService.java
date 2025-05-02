@@ -25,6 +25,10 @@ public class PortfolioService {
     @Autowired
     private  ExternalApiService externalApiService;
 
+    @Autowired
+    private EmailService emailService;
+
+
     public void addStock(String username, StockHoldingDTO stockHoldingDTO) {
         User user = (User) userRepository.findByUsername(username);
         if (user == null){
@@ -96,4 +100,58 @@ public class PortfolioService {
         holding.setCurrentPrice(stockHoldingDTO.getCurrentPrice());
         stockHoldingRepository.save(holding);
     }
+
+
+//    public double calculatePortfolioValue(Long userId) {
+//        List<StockHolding> holdings = stockHoldingRepository.findByUserId(userId);
+//        double totalValue = 0.0;
+//        for (StockHolding holding : holdings) {
+//            double currentPrice = externalApiService.fetchStockData(holding.getSymbol());
+//            holding.setCurrentPrice(currentPrice);
+//            stockHoldingRepository.save(holding);
+//            totalValue += currentPrice * holding.getQuantity();
+//        }
+//        return totalValue;
+//    }
+//
+//
+//    public void checkPortfolioThresholds(User user) {
+//        double totalValue = calculatePortfolioValue(user.getId());
+//        boolean sendHighEmail = totalValue >= 10000 && !user.isHighThresholdEmailSent();
+//        boolean sendLowEmail = totalValue <= -2000 && !user.isLowThresholdEmailSent();
+//
+//        try {
+//            if (sendHighEmail) {
+//                emailService.sendEmail(
+//                        user.getEmail(),
+//                        "Portfolio Alert: High Value Reached",
+//                        "Dear " + user.getUsername() + ",\n\nYour portfolio value has reached or exceeded $10,000. Current value: $" + String.format("%.2f", totalValue) + ".\n\nBest regards,\nGotStock Team"
+//                );
+//                user.setHighThresholdEmailSent(true);
+//                userRepository.save(user);
+//                log.info("High threshold email sent to user: {}", user.getUsername());
+//            }
+//            if (sendLowEmail) {
+//                emailService.sendEmail(
+//                        user.getEmail(),
+//                        "Portfolio Alert: Low Value Reached",
+//                        "Dear " + user.getUsername() + ",\n\nYour portfolio value has fallen to or below -$2,000. Current value: $" + String.format("%.2f", totalValue) + ".\n\nBest regards,\nGotStock Team"
+//                );
+//                user.setLowThresholdEmailSent(true);
+//                userRepository.save(user);
+//                log.info("Low threshold email sent to user: {}", user.getUsername());
+//            }
+//            // Reset flags if value moves back within normal range
+//            if (totalValue < 10000 && user.isHighThresholdEmailSent()) {
+//                user.setHighThresholdEmailSent(false);
+//                userRepository.save(user);
+//            }
+//            if (totalValue > -2000 && user.isLowThresholdEmailSent()) {
+//                user.setLowThresholdEmailSent(false);
+//                userRepository.save(user);
+//            }
+//        } catch (Exception e) {
+//            log.error("Failed to send email to user {}: {}", user.getUsername(), e.getMessage());
+//        }
+//    }
 }
