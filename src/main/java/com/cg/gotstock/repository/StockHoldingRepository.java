@@ -1,7 +1,8 @@
 package com.cg.gotstock.repository;
 
 import com.cg.gotstock.model.StockHolding;
-import org.apache.catalina.User;
+
+import com.cg.gotstock.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

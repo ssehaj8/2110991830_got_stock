@@ -4,11 +4,10 @@ package com.cg.gotstock.service;
 //import com.bridgelabz.employeepayroll.dto.ResponseDTO;
 import com.cg.gotstock.model.StockHolding;
 import com.cg.gotstock.repository.StockHoldingRepository;
-import com.cg.gotstock.repository.UserRepository;
+import com.cg.gotstock.service.EmailService;
 import com.google.gson.Gson;
 import com.cg.gotstock.dto.PortfolioResponseDTO;
 import jakarta.mail.MessagingException;
-import com.cg.gotstock.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -38,11 +37,7 @@ public class ExternalApiService {
     private EmailService emailService;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private StockHoldingRepository stockHoldingRepository;
-
 
     // Inject RestTemplate through constructor
     public ExternalApiService(RestTemplate restTemplate) {
@@ -80,30 +75,15 @@ public class ExternalApiService {
         }
             return priceRounded;
     }
-
-//    @Scheduled(fixedRate = 1800000) // Run every 30 minutes
-//    public void checkAllPortfolios() {
-//        List<User> users = userRepository.findAll();
-//        for (User user : users) {
-//            portfolioService.checkPortfolioThresholds(user);
-//        }
-//    }
-
 }
+    
 
-
-//@Scheduled(fixedRate = 1800000) // Run every 30 minutes
-//public void checkAllPortfolios() {
-//    List<User> users = userRepository.findAll();
-//    for (User user : users) {
-//        portfolioService.checkPortfolioThresholds(user);
-//    }
-//}
 //    @Scheduled(fixedRate = 300000) // 300,000 milliseconds = 5 minutes
 //    public void sendStockDataEmail() throws MessagingException {
 //        Double stockData = fetchStockData("AAPL");
 //        // Compose Email
 //        emailService.sendEmail("ryan79kumar@gmail.com","Live Stock Data", stockData);
 //        //   return  new PortfolioResponseDTO("Send Live Stock Data",null);
+//    }
 
-    
+
