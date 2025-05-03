@@ -21,6 +21,7 @@ public class StockHolding {
 
     private Double currentPrice;
 
+    private Double gainLoss;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

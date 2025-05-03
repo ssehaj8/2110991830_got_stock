@@ -22,6 +22,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
@@ -43,15 +44,17 @@ public class UserService implements UserInterface {
 
     private static final PasswordEncoder passEncoder = new BCryptPasswordEncoder();
 
-    public ResponseEntity<?> registerUser(UserRegisterDTO registerDTO)throws MessagingException  {
-        log.info("Registering user: {}", registerDTO.getEmail());
+    // Register User
+    public ResponseEntity<?> registerUser(UserRegisterDTO registerDTO) throws MessagingException {
+        log.info("Registering user with email: {}", registerDTO.getEmail());
 
-
+        // Check if user already exists
         if (existsByEmail(registerDTO.getEmail())) {
             log.warn("Registration failed: User already exists with email {}", registerDTO.getEmail());
-            return new ResponseEntity<>("registration failed", HttpStatus.CONFLICT);
+            return new ResponseEntity<>("User already exists", HttpStatus.CONFLICT);
         }
 
+        // Create a new user
         User user = new User();
         user.setFirstname(registerDTO.getFirstname());
         user.setLastname(registerDTO.getLastname());
@@ -60,28 +63,39 @@ public class UserService implements UserInterface {
         user.setPhonenumber(registerDTO.getPhonenumber());
         user.setPassword(passEncoder.encode(registerDTO.getPassword()));
 
+        // Save user to database
         userRepository.save(user);
         registerDTO.setId(user.getId());
-        log.info("User {} registered successfully!", user.getEmail());
-        emailService.sendEmail(user.getEmail(), "Registration Successful", "Hii"
-                + "\n You have been successfully Registered in GOT-STOCK");
 
-        return new ResponseEntity<UserRegisterDTO>(registerDTO, HttpStatus.OK);
+        log.info("User with email {} registered successfully", user.getEmail());
+
+        // Send confirmation email
+        emailService.sendEmail(user.getEmail(), "Registration Successful", "Hello " + user.getFirstname() +
+                ",\n\nYou have been successfully registered with GOT-STOCK!");
+
+        return new ResponseEntity<>(registerDTO, HttpStatus.OK);
     }
 
-
-    public ResponseEntity<?> loginUser(UserLoginDTO loginDTO)  {
+    // User Login
+    public ResponseEntity<?> loginUser(UserLoginDTO loginDTO) {
         log.info("Login attempt for user: {}", loginDTO.getUsername());
-        try{
+
+        try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword()));
-            UserDetails userDetails= userDetailsService.loadUserByUsername(loginDTO.getEmail());
-            String jwtToken= jwtUtility.generateToken(userDetails.getUsername());
+            UserDetails userDetails = userDetailsService.loadUserByUsername(loginDTO.getEmail());
+
+            // Generate JWT token
+            String jwtToken = jwtUtility.generateToken(userDetails.getUsername());
+            log.info("Login successful for user: {}", loginDTO.getEmail());
+
             return new ResponseEntity<>(jwtToken, HttpStatus.OK);
         } catch (Exception e) {
+            log.error("Login failed for user: {}", loginDTO.getEmail(), e);
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
+    }
 
-        }
+    // Reset Password
     public ResponseEntity<?> resetPassword(ResetPasswordDTO resetPasswordDTO) {
         log.info("Password reset requested for email: {}", resetPasswordDTO.getEmail());
 
@@ -92,7 +106,7 @@ public class UserService implements UserInterface {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
 
-
+        // Check OTP validity
         if (user.getOtp() == null || !user.getOtp().equals(resetPasswordDTO.getOtp())) {
             log.warn("Invalid OTP for email: {}", resetPasswordDTO.getEmail());
             return new ResponseEntity<>("Invalid OTP", HttpStatus.BAD_REQUEST);
@@ -102,16 +116,19 @@ public class UserService implements UserInterface {
             log.warn("Expired OTP for email: {}", resetPasswordDTO.getEmail());
             return new ResponseEntity<>("OTP has expired", HttpStatus.BAD_REQUEST);
         }
+
+        // Update password
         user.setPassword(passEncoder.encode(resetPasswordDTO.getNewPassword()));
-        user.setOtp(null);
-        user.setOtpExpiry(null);
+        user.setOtp(null); // Clear OTP after successful reset
+        user.setOtpExpiry(null); // Clear OTP expiry
         userRepository.save(user);
 
         log.info("Password updated successfully for email: {}", resetPasswordDTO.getEmail());
         return new ResponseEntity<>("Password updated successfully", HttpStatus.OK);
     }
 
-    public ResponseEntity<?> forgotPassword(ForgotPasswordDTO forgotPasswordDTO) throws MessagingException{
+    // Forgot Password
+    public ResponseEntity<?> forgotPassword(ForgotPasswordDTO forgotPasswordDTO) throws MessagingException {
         log.info("Forgot password requested for email: {}", forgotPasswordDTO.getEmail());
 
         User user = userRepository.findByEmail(forgotPasswordDTO.getEmail());
@@ -121,12 +138,13 @@ public class UserService implements UserInterface {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
 
-
+        // Generate OTP
         String otp = generateOtp();
         user.setOtp(otp);
         user.setOtpExpiry(LocalDateTime.now().plusMinutes(10)); // 10 min expiry
         userRepository.save(user);
 
+        // Send OTP via email
         String subject = "Your OTP for Password Reset";
         String body = "Hello,\n\nYour OTP for resetting your password is: " + otp +
                 "\nThis OTP is valid for 10 minutes.\n\nRegards,\nGOT-STOCK Team";
@@ -135,27 +153,27 @@ public class UserService implements UserInterface {
         log.info("OTP sent to email: {}", forgotPasswordDTO.getEmail());
         return new ResponseEntity<>("OTP sent to email", HttpStatus.OK);
     }
+
+    // Generate OTP using SecureRandom for better security
     private String generateOtp() {
-        Random random = new Random();
-        int otp = 100000 + random.nextInt(900000); // 6-digit OTP
+        SecureRandom secureRandom = new SecureRandom();
+        int otp = 100000 + secureRandom.nextInt(900000); // 6-digit OTP
         return String.valueOf(otp);
     }
+
     @Override
     public Optional<User> getUserByUsername(String username) {
         return Optional.empty();
     }
 
-
+    // Use BCryptPasswordEncoder to compare raw and encoded passwords
     @Override
     public boolean matchPassword(String rawPassword, String encodedPassword) {
-        // Use equals() if passwords are plain text (not recommended)
-        return rawPassword.equals(encodedPassword);
+        return passEncoder.matches(rawPassword, encodedPassword); // Secure password comparison
     }
 
     @Override
     public boolean existsByEmail(String email) {
-        return false;
+        return userRepository.findByEmail(email) != null;
     }
-
-
 }
