@@ -1,3 +1,4 @@
+
 package com.cg.gotstock;
 
 import org.springframework.boot.SpringApplication;
@@ -19,3 +20,4 @@ public class GotstockApplication {
 		return new RestTemplate();
 	}
 }
+

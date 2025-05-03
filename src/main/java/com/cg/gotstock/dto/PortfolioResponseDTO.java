@@ -9,6 +9,7 @@ import java.util.List;
 public class PortfolioResponseDTO{
 
 
+
     private Long id;
     private String username;
     private List<StockHoldingDTO> holdings;

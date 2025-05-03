@@ -1,8 +1,10 @@
 package com.cg.gotstock.controller;
 
+import com.cg.gotstock.dto.AlertDTO;
 import com.cg.gotstock.dto.StockHoldingDTO;
 import com.cg.gotstock.repository.StockHoldingRepository;
 import com.cg.gotstock.service.PortfolioService;
+import com.cg.gotstock.service.StockAlertService;
 import com.lowagie.text.DocumentException;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -30,6 +32,10 @@ public class PortfolioController {
      * @param stockHoldingDTO DTO containing stock details
      * @return ResponseEntity with status and message
      */
+
+    @Autowired
+    private StockAlertService stockAlertService;
+
     @PostMapping("/add")
     public ResponseEntity<?> addStock(@Valid @RequestBody StockHoldingDTO stockHoldingDTO) {
         return portfolioService.addStock(stockHoldingDTO);
@@ -83,5 +89,15 @@ public class PortfolioController {
     public ResponseEntity<?> sendReport() throws MessagingException, DocumentException {
         portfolioService.sendStockReport();
         return ResponseEntity.ok("Report sent successfully");
+    }
+
+
+
+    @PostMapping("/alert")
+    public ResponseEntity<?> createAlert(@Valid @RequestBody AlertDTO alertDTO) {
+        log.info("Creating stock alert for symbol: {}", alertDTO.getSymbol());
+            stockAlertService.createAlert(alertDTO);
+        return ResponseEntity.ok("Stock alert sent successfully");
+
     }
 }
