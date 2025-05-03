@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -93,15 +92,13 @@ public class PortfolioService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         User user = userRepository.findByEmail(email);
-        log.info("user found");
 
-        Long userId=user.getId();
         if (user == null) {
             log.error("User with email {} not found", email);
             throw new RuntimeException("User not found");
         }
 
-       // Long userId = user.getId();
+        Long userId = user.getId();
         List<StockHolding> holdings = stockHoldingRepository.findByUserId(userId);
 
         // Calculate the total portfolio value

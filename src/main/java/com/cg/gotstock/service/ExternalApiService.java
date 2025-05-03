@@ -11,6 +11,7 @@ import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +51,7 @@ public class ExternalApiService {
     @Autowired
     private StockHoldingRepository stockHoldingRepository;
 
+
     /**
      * Constructor injection for RestTemplate to interact with external APIs.
      *
@@ -65,8 +67,10 @@ public class ExternalApiService {
      * @param symbol the stock symbol to fetch data for
      * @return the rounded stock price
      */
+
+
     public Double fetchStockData(String symbol) {
-        String apiKey = "71fb84fc23244c0da6f36ba08e70ebcc"; // API Key for the stock data service
+        String apiKey = "040b895c9d0847fbaf3d434a38e04100"; // API Key for the stock data service
         String interval = "5min"; // The time interval for stock data (e.g., 5min, 15min, 1day)
 
         // Build the URL to call the external API for stock data

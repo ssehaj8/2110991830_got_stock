@@ -11,9 +11,6 @@ public class AlertDTO {
     @NotBlank(message = "Stock symbol is mandatory")
     private String symbol;
 
-    @NotBlank(message = "Username is mandatory")
-    private String username;
-
     @NotNull(message = "Upper threshold is mandatory")
     @Min(value = 0, message = "Upper threshold cannot be negative")
     private Double upperThreshold;
