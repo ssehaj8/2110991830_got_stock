@@ -23,4 +23,7 @@ public class StockHoldingDTO {
 
     private Double currentPrice;
 
+    private Double gainLoss;
+
+
 }
