@@ -27,7 +27,6 @@ import java.util.Random;
 @Slf4j
 @Service
 public class UserService implements UserInterface {
-
     @Autowired
     private UserRepository userRepository;
     @Autowired
