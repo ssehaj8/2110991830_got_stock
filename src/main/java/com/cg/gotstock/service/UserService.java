@@ -1,9 +1,6 @@
 package com.cg.gotstock.service;
 
-import com.cg.gotstock.dto.ForgotPasswordDTO;
-import com.cg.gotstock.dto.ResetPasswordDTO;
-import com.cg.gotstock.dto.UserLoginDTO;
-import com.cg.gotstock.dto.UserRegisterDTO;
+import com.cg.gotstock.dto.*;
 import com.cg.gotstock.model.User;
 import com.cg.gotstock.repository.UserRepository;
 import com.cg.gotstock.security.JwtUtility;
@@ -76,7 +73,7 @@ public class UserService implements UserInterface {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword()));
             UserDetails userDetails= userDetailsService.loadUserByUsername(loginDTO.getEmail());
             String jwtToken= jwtUtility.generateToken(userDetails.getUsername());
-            return new ResponseEntity<>(jwtToken, HttpStatus.OK);
+            return new ResponseEntity<>("User Logged in Successfully\n" + "token: "+ jwtToken, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
@@ -135,6 +132,25 @@ public class UserService implements UserInterface {
         log.info("OTP sent to email: {}", forgotPasswordDTO.getEmail());
         return new ResponseEntity<>("OTP sent to email", HttpStatus.OK);
     }
+
+    public ResponseEntity<?> changePassword( String token,ChangePasswordDTO changePasswordDTO) {
+        String email = jwtUtility.extractEmail(token.replace("Bearer ", ""));
+
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            return new ResponseEntity<>("Invalid token or user not found", HttpStatus.UNAUTHORIZED);
+        }
+
+        if (!matchPassword(changePasswordDTO.getCurrentPassword(), user.getPassword())) {
+            return new ResponseEntity<>("Current password is incorrect", HttpStatus.BAD_REQUEST);
+        }
+
+        user.setPassword(passEncoder.encode(changePasswordDTO.getNewPassword()));
+        userRepository.save(user);
+
+        return new ResponseEntity<>("Password changed successfully", HttpStatus.OK);
+    }
+
     private String generateOtp() {
         Random random = new Random();
         int otp = 100000 + random.nextInt(900000); // 6-digit OTP
@@ -148,8 +164,7 @@ public class UserService implements UserInterface {
 
     @Override
     public boolean matchPassword(String rawPassword, String encodedPassword) {
-        // Use equals() if passwords are plain text (not recommended)
-        return rawPassword.equals(encodedPassword);
+        return passEncoder.matches(rawPassword, encodedPassword);
     }
 
     @Override
