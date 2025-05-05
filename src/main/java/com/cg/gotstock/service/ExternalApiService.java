@@ -77,7 +77,6 @@ public class ExternalApiService {
         String url = "https://api.twelvedata.com/time_series?symbol=" + symbol +
                 "&interval=" + interval + "&apikey=" + apiKey;
 
-        try {
             // Make the GET request to fetch stock data
             ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
             logger.info("Stock data fetched successfully for symbol: {}", symbol);
@@ -99,10 +98,6 @@ public class ExternalApiService {
                 logger.error("No stock data available for symbol: {}", symbol);
             }
             return priceRounded;
-        } catch (Exception e) {
-            // Log error if the API request fails
-            logger.error("Error fetching stock data for symbol: {}. Error: {}", symbol, e.getMessage());
-            return 0.0;
         }
     }
 
@@ -122,7 +117,6 @@ public class ExternalApiService {
         }
     }
     */
-}
 
 //    @Scheduled(fixedRate = 300000) // 300,000 milliseconds = 5 minutes
 //    public void sendStockDataEmail() throws MessagingException {
