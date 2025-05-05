@@ -30,28 +30,18 @@ public class User implements UserDetails {
 
     @Column(unique = true, nullable = false)
     private String email;
-
-    private String resetCode;
-
-    private LocalDateTime resetCodeExpiry;
-
-
     private String otp;
     private LocalDateTime otpExpiry;
-
-//    private String token;
-
+    private Double previousPortfolioValue;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<StockHolding> holdings;
 
-    private Double previousPortfolioValue;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.emptyList(); // No roles for now
     }
-
     @Override
     public String getPassword() {
         return password;

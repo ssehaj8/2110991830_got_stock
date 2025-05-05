@@ -1,35 +1,22 @@
 package com.cg.gotstock.service;
-
-
-//import com.bridgelabz.employeepayroll.dto.ResponseDTO;
-import com.cg.gotstock.model.StockHolding;
 import com.cg.gotstock.repository.StockHoldingRepository;
-import com.cg.gotstock.service.EmailService;
 import com.google.gson.Gson;
-import com.cg.gotstock.dto.PortfolioResponseDTO;
-import jakarta.mail.MessagingException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.ResponseEntity;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 /**
  * Service class to fetch stock data from an external API and send emails with stock information.
  */
 @Service
+@Slf4j
 public class ExternalApiService {
-
-    // Logger instance for logging actions in this class
-    private static final Logger logger = LoggerFactory.getLogger(ExternalApiService.class);
 
     // Inner class to map response from the external API
     class Value {
@@ -67,8 +54,6 @@ public class ExternalApiService {
      * @param symbol the stock symbol to fetch data for
      * @return the rounded stock price
      */
-
-
     public Double fetchStockData(String symbol) {
         String apiKey = "040b895c9d0847fbaf3d434a38e04100"; // API Key for the stock data service
         String interval = "5min"; // The time interval for stock data (e.g., 5min, 15min, 1day)
@@ -79,7 +64,7 @@ public class ExternalApiService {
 
             // Make the GET request to fetch stock data
             ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-            logger.info("Stock data fetched successfully for symbol: {}", symbol);
+            log.info("Stock data fetched successfully for symbol: {}", symbol);
 
             // Parse the JSON response using Gson
             Gson gson = new Gson();
@@ -93,37 +78,14 @@ public class ExternalApiService {
                 priceRounded = new BigDecimal(latest.close)
                         .setScale(2, RoundingMode.HALF_UP)
                         .doubleValue();
-                logger.info("Latest stock price for {}: {}", symbol, priceRounded);
+                log.info("Latest stock price for {}: {}", symbol, priceRounded);
             } else {
-                logger.error("No stock data available for symbol: {}", symbol);
+                log.error("No stock data available for symbol: {}", symbol);
             }
             return priceRounded;
         }
     }
 
-    // Uncomment and use if you want to schedule stock data email sending every 5 minutes
-    /*
-    @Scheduled(fixedRate = 300000) // 300,000 milliseconds = 5 minutes
-    public void sendStockDataEmail() throws MessagingException {
-        // Fetch stock data for a given symbol, e.g., AAPL (Apple)
-        Double stockData = fetchStockData("AAPL");
 
-        if (stockData != 0.0) {
-            // Compose and send the stock data email
-            emailService.sendEmail("ryan79kumar@gmail.com", "Live Stock Data", stockData);
-            logger.info("Sent live stock data email successfully.");
-        } else {
-            logger.warn("Failed to fetch stock data. No email sent.");
-        }
-    }
-    */
-
-//    @Scheduled(fixedRate = 300000) // 300,000 milliseconds = 5 minutes
-//    public void sendStockDataEmail() throws MessagingException {
-//        Double stockData = fetchStockData("AAPL");
-//        // Compose Email
-//        emailService.sendEmail("ryan79kumar@gmail.com","Live Stock Data", stockData);
-//        //   return  new PortfolioResponseDTO("Send Live Stock Data",null);
-//    }
 
 
