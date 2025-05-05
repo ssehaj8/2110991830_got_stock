@@ -130,7 +130,7 @@ public class StockAlertService {
             double currentPrice = externalApiService.fetchStockData(holding.getSymbol());
             holding.setCurrentPrice(currentPrice);
             stockHoldingRepository.save(holding);
-            totalValue += currentPrice * holding.getQuantity();
+            totalValue += (currentPrice - holding.getPurchasePrice())* holding.getQuantity();
         }
         return totalValue;
     }
@@ -138,7 +138,7 @@ public class StockAlertService {
     /**
      * Scheduled task to check portfolio value changes every 30 minutes and send email if significant change detected.
      */
-    @Scheduled(fixedRate = 300000) // 1,800,000 milliseconds = 30 minutes
+    @Scheduled(fixedRate = 1800000) // 1,800,000 milliseconds = 30 minutes
     public void checkPortfolioValueChanges() {
         log.info("Checking portfolio value changes for all users");
         List<User> users = userRepository.findAll();
@@ -147,7 +147,7 @@ public class StockAlertService {
                 Double currentPortfolioValue = calculatePortfolioValue(user.getId());
                 Double previousPortfolioValue = user.getPreviousPortfolioValue() != null ? user.getPreviousPortfolioValue() : 0.0;
 
-                // Check if portfolio value changed by more than 1%
+                // Check if portfolio value changed by more than 0%
                 if (previousPortfolioValue != 0.0) {
                     double changePercentage = Math.abs((currentPortfolioValue - previousPortfolioValue) / previousPortfolioValue * 100);
                     if (changePercentage >= 0.0) {

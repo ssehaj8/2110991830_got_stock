@@ -101,6 +101,7 @@ public class PortfolioService {
         Long userId = user.getId();
         List<StockHolding> holdings = stockHoldingRepository.findByUserId(userId);
 
+
         // Calculate the total portfolio value
         Double totalPortfolioValue = 0.0;
         for (StockHolding holding : holdings) {
