@@ -3,11 +3,9 @@ package com.cg.gotstock.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 @Data
 @Entity
-public class StockHolding {
+public class StockAlert {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,13 +13,13 @@ public class StockHolding {
 
     private String symbol;
 
-    private Integer quantity;
+    private Double upperThreshold;
 
-    private Double purchasePrice;
+    private Double lowerThreshold;
 
-    private Double currentPrice;
+    private boolean upperThresholdEmailSent;
 
-    private Double gainLoss;
+    private boolean lowerThresholdEmailSent;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
