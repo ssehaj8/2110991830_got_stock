@@ -71,7 +71,7 @@ public class PortfolioController {
      * @param stockHoldingDTO  Updated stock data
      * @return ResponseEntity with update status
      */
-    @PostMapping("/update/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<?> updateStock(
             @PathVariable(value = "id") Long id,
             @Valid @RequestBody StockHoldingDTO stockHoldingDTO) {

@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -153,7 +155,7 @@ public class UserService implements UserInterface {
         // Send OTP email
         String subject = "Your OTP for Password Reset";
         String body = "Hello,\n\nYour OTP for resetting your password is: " + otp +
-                "\nThis OTP is valid for 10 minutes.\n\nRegards,\nGOT-STOCK Team";
+                " \n\nThis OTP is valid for 10 minutes.\n\nRegards,\nGOT-STOCK Team";
         emailService.sendEmail(user.getEmail(), subject, body);
 
         log.info("OTP sent to email: {}", forgotPasswordDTO.getEmail());
@@ -163,8 +165,10 @@ public class UserService implements UserInterface {
     /**
      * Changes the user's password after validating JWT token and current password.
      */
-    public ResponseEntity<?> changePassword(String token, ChangePasswordDTO changePasswordDTO) {
-        String email = jwtUtility.extractEmail(token.replace("Bearer ", ""));
+    public ResponseEntity<?> changePassword(ChangePasswordDTO changePasswordDTO) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
 
         User user = userRepository.findByEmail(email);
         if (user == null) {

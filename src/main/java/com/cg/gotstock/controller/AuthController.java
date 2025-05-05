@@ -43,8 +43,8 @@ public class AuthController {
     }
 
     @PostMapping("/change-password")
-    public ResponseEntity<?>resetPassword(@RequestHeader("Authorization") String token, @Valid @RequestBody ChangePasswordDTO changePasswordDTO ){
-        return userService.changePassword(token, changePasswordDTO );
+    public ResponseEntity<?>resetPassword(@Valid @RequestBody ChangePasswordDTO changePasswordDTO ){
+        return userService.changePassword(changePasswordDTO );
     }
 
 }
