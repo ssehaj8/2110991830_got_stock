@@ -12,7 +12,5 @@ import java.util.List;
 public interface StockHoldingRepository extends JpaRepository<StockHolding, Long> {
     List<StockHolding> findByUser(User user);
     List<StockHolding> findByUserId(Long userId);
-
-    // No extra methods needed for this delete logic
     }
 

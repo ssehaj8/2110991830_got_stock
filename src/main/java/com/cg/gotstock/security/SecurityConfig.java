@@ -39,8 +39,6 @@ public class SecurityConfig {
 
     /**
      * Security filter chain configuration to secure the application.
-     * Disables CSRF, sets stateless session management, and configures access rules.
-     *
      * @param http HttpSecurity configuration object
      * @return configured SecurityFilterChain
      * @throws Exception if any error occurs while configuring security

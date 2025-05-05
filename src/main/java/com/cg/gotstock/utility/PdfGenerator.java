@@ -83,6 +83,7 @@ public class PdfGenerator {
             Table summaryTable = new Table(2); // 2 columns for total value
             summaryTable.addCell("Total Portfolio Value");
             summaryTable.addCell(String.valueOf(value));
+
             document.add(summaryTable); // Add the portfolio summary table
 
             // Close the document after writing
