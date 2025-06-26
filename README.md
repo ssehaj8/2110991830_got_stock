@@ -1,23 +1,23 @@
-Got Stock — Your Personal Stock Portfolio Assistant
+#Got Stock — Your Personal Stock Portfolio Assistant
 Got Stock is your intelligent companion for monitoring your stock investments. This application helps you track your portfolio, stay updated with price changes, set alerts, and manage your holdings — all from one place.
 
-What Does It Do?
-🧾 Upload and manage your stock holdings
+#What Does It Do?
+ Upload and manage your stock holdings
 
-🔔 Set alerts for stock prices (e.g., "Alert me when TCS > ₹4000")
+ Set alerts for stock prices (e.g., "Alert me when TCS > ₹4000")
 
-📊 Track your portfolio performance
+ Track your portfolio performance
 
-🧮 Calculate gain/loss for each stock and the overall portfolio
+ Calculate gain/loss for each stock and the overall portfolio
 
-🛡️ Secure login and registration
+ Secure login and registration
 
-Technologies Used
+#Technologies Used
 | Frontend          | Backend          | Database | Security          |
 | ----------------- | ---------------- | -------- | ----------------- |
 | React (Client UI) | Java Spring Boot | MySQL    | JWT (Token-Based) |
 
- How It Works (A Non-Technical Flow)
+ #How It Works (A Non-Technical Flow)
  graph TD
     A[User logs in / signs up] --> B[Frontend React App]
     B --> C[API Call to Spring Boot (AuthController)]
@@ -35,7 +35,7 @@ Technologies Used
     L --> M[User notified if condition met]
 
 
-Features & API Routes
+#Features & API Routes
 | Feature              | API Endpoint             | Method | Description                      |
 | -------------------- | ------------------------ | ------ | -------------------------------- |
 | Register             | `/auth/register`         | POST   | Creates new user                 |
@@ -49,7 +49,7 @@ Features & API Routes
 
 
 
-USER JOURNEY FLOWCHART
+#USER JOURNEY FLOWCHART
 User (Frontend)
     ↓
 [1] User takes an action
