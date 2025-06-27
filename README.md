@@ -42,8 +42,6 @@ Got Stock is your intelligent companion for monitoring your stock investments. T
 | Get All Alerts       | `/alert/user/{id}`       | GET    | View alerts for the user         |
 | Delete Holding/Alert | `/portfolio/delete/{id}` | DELETE | Delete specific holding          |
 
-## Flowchart representation
-<img src="https://github.com/user-attachments/assets/1669825d-c1ee-4a31-9626-7b54cd37457b" alt="image" width="400" height="500"/>
 
 
 
